@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>React Tabs</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body> 
+    <div id="root"></div>
+    <script type="text/babel">
+      function MyApp() {
+        let [page, setPage] = React.useState("todo");
+        let pageComponent = <ToDo />;
+        if (page == "counter") {
+          pageComponent = <Counter />;
+        }
+        if (page == "products") {
+          pageComponent = <ProductList />;
+        }
+        return <>
+            <nav>
+              <span onClick={() => { setPage("todo");}}>ToDo</span>/
+              <span onClick={() => { setPage("counter");}}>Counter</span>/
+              <span onClick={() => { setPage("products");}}>Products</span>
+            </nav>
+            <hr />
+            <main>{pageComponent}</main>
+            Dark <input type="checkbox" />
+          </>;
+
+        function ProductList() {
+          // https://cwpeng.github.io/live-records-samples/data/products.json
+  
+        React.useEffect(function () {
+            let getData = async function () {
+              let src = "https://cwpeng.github.io/live-records-samples/data/products.json";
+              let response = await fetch(src);
+              let newData = await response.json();
+              setData(newData);
+            };
+            getData();
+          },[true]);
+        let [data, setData] = React.useState(null);
+        if (data == null) {
+          return <div>Loading</div>;
+        } else {
+          let items = [];
+          for (let i = 0; i < data.length; i++) {
+            items.push(<li key={data[i].number}>{data[i].name}</li>);
+          }
+        }
+        return <div>
+          <h3>Product List</h3>
+          <ul>{items}</ul>
+        </div>;
+      }};
+ function ToDoList() {
+        return <div>ToDo Feature</div>;
+      }
+      function Counter() {
+        return <div>
+          <button onClick={decrease}>-</button>
+          <span>{count}</span>
+          <button onClick={}>+</button>
+        </div>;
+      }
+      function Counter() {
+        let [count, setCount] = React.useState(1);
+        let add = function () {
+          setCount(function (preCount) {
+            console.log(preCount);
+            return preCount + 1;
+          });
+        };
+        /*
+              假設 setData 是更新狀態用的函式，有以下兩種狀況：
+                  1. 前後的狀態之間沒有關聯性
+                      setData(新的狀態);
+                  2. 前後的狀態有相依性
+                      setData(function(前一個狀態){return 新的狀態;
+                      });
+          */
+        /*
+              第一次掛載組件的時候執行一個函式，組件更新/重劃時不執行(use side effect)
+              React.useEffect(function){
+                  // 要執行的程式碼
+                  return function(){
+                  組件卸載的時候要做的事情};
+              }, [true]);
+              ex.排程、外部連線
+          */
+          function ToDo(props) {
+        let data = props.data;
+        let items = [];
+        for (let i = 0; i < data.length; i++) {
+          if (data[i].important) {
+            items.push(
+              <li style={{ fontWeight: "bold" }} key={i}>
+                <span>{data[i].text}</span>
+                <button
+                  onClick={() => {
+                    remove(i);
+                  }}
+                >
+                  Delete
+                </button>
+              </li>
+            );
+          } else {
+            items.push(
+              <li key={i}>
+                <span>{data[i].text}</span>
+                <button
+                  onClick={() => {
+                    props.remove(i);
+                  }}
+                >
+                  Delete
+                </button>
+              </li>
+            );
+          }
+        }
+        return <ul>{items}</ul>;
+      }
+
+        React.useEffect(
+          function () {
+            // 設定每秒鐘更新一次的排程
+            let scheduleId = window.setInterval(function () {
+              consol.log("executed");
+              add();
+            }, 1000);
+            return function () {
+              // 清除掛載的時候設定的排程
+              window.clearInterval(scheduleId);
+            };
+          },
+          [true]
+        );
+
+        return <div>
+          <span>{count}</span>
+          <button onClick={add}>+</button>
+        </div>;
+      }
+
+      let root = ReactDOM.createRoot(document.querySelector("#root"));
+      root.render(<MyApp />);
+    </script>
+  </body>
+</html>

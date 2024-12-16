@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      function MyApp() {
+        let [pageState, setPageState] = React.useState("todolist");
+        let pageComponent = <ToDoList />;
+        if (pageState == "counter") {
+          pageComponent = <Counter />;
+        } else if (pageState == "productslist") {
+          pageComponent = <ProductsList />;
+        }
+
+        return (
+          <>
+            <nav>
+              <span
+                onClick={() => {
+                  setPageState("todolist");
+                }}
+              >
+                ToDoList
+              </span>
+              /
+              <span
+                onClick={() => {
+                  setPageState("counter");
+                }}
+              >
+                Counter
+              </span>
+              
+              <span
+                onClick={() => {
+                  setPageState("productslist");
+                }}
+              >
+              
+              </span>
+            </nav>
+            <hr />
+            <main>{pageComponent}</main>
+          </>
+        );
+      }
+
+      async function ProductsList() {
+        let src =
+          "https://cwpeng.github.io/live-records-samples/data/products.json";
+        let rawData = await fetch(src);
+        let data = await rawData.json();
+        console.log(data);
+
+        let [productsData, setProductsData] = React.useState([]);
+        let items = [];
+        for (let i = 0; i < data.length; i++) {
+          items.push(<li key={i}>{data[i]}</li>);
+        }
+        console.log(items);
+        setProductsData(data);
+
+        return (
+          <div>
+            <h3>Products List</h3>
+            <ul>{items}</ul>
+          </div>
+        );
+      }
+
+      function ToDoList() {
+        let [dataState, setDataState] = React.useState([]);
+        let add = function (textState, checkState) {
+          let newDataState = dataState.slice();
+          newDataState.push({ text: textState, important: checkState });
+          console.log(newDataState);
+          setDataState(newDataState);
+        };
+
+        let remove = function (i) {
+          console.log(i);
+          let newDataState = dataState.slice();
+          newDataState.splice(i, 1);
+          setDataState(newDataState);
+        };
+
+        return (
+          <div>
+            <ToDoForm add={add} />
+            <hr />
+            <ToDo data={dataState} remove={remove} />
+          </div>
+        );
+      }
+
+      function ToDo(props) {
+        let dataState = props.data;
+        let items = [];
+        let newDataState = dataState.slice();
+        for (let i = 0; i < newDataState.length; i++) {
+          if (newDataState[i].important == true) {
+            items.push(
+              <li style={{ fontWeight: "bold" }} key={i}>
+                <span>{newDataState[i].text}</span>
+                <button
+                  onClick={() => {
+                    props.remove(i);
+                  }}
+                >
+                  X
+                </button>
+              </li>
+            );
+          } else {
+            items.push(
+              <li key={i}>
+                <span>{newDataState[i].text}</span>
+                <button
+                  onClick={() => {
+                    props.remove(i);
+                  }}
+                >
+                  X
+                </button>
+              </li>
+            );
+          }
+        }
+
+        return <ul>{items}</ul>;
+      }
+      function ToDoForm(props) {
+        let [textState, setTextState] = React.useState("");
+        let changeTextState = function (e) {
+          setTextState(e.target.value);
+        };
+
+        let [checkState, setCheckState] = React.useState(false);
+        let changeCheckState = function () {
+          setCheckState(!checkState);
+        };
+
+        return (
+          <div>
+            <input
+              type="checkbox"
+              checked={checkState}
+              onChange={changeCheckState}
+            />
+            <input type="text" value={textState} onChange={changeTextState} />
+            <button
+              onClick={() => {
+                props.add(textState, checkState);
+                setTextState("");
+              }}
+            >
+              新增
+            </button>
+          </div>
+        );
+      }
+
+      function Counter() {
+        // [狀態的變數, 更新狀態的函式]=React.useState(初始值);
+        let [num, setNum] = React.useState(1);
+        let increase = function () {
+          setNum(function (preNum) {
+            return preNum + 1;
+          });
+        };
+
+        // 第一次掛載才執行一次的函式(Hook)：React.useEffect(函式{要執行的程式碼;return 卸載時要執行的程式碼},[true]);
+        React.useEffect(
+          function () {
+            let scheduleId = window.setInterval(function () {
+              increase();
+              console.log("Executed");
+            }, 1000);
+            return function () {
+              window.clearInterval(scheduleId);
+            };
+          },
+          [true]
+        );
+
+        let decrease = function () {
+          num -= 1;
+          console.log(num);
+          setNum(num);
+        };
+
+        return (
+          <div>
+            <button
+              onClick={() => {
+                decrease();
+              }}
+            >
+              -
+            </button>
+            <span>{num}</span>
+            <button
+              onClick={() => {
+                increase();
+              }}
+            >
+              +
+            </button>
+          </div>
+        );
+      }
+
+      let root = ReactDOM.createRoot(document.querySelector("#root"));
+      root.render(<MyApp />);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tabs 標籤選單</title>
+  </head>
+  <body>
+    <div>
+      <span onclick="change('todo')">ToDoList</span> 
+      <!-- 當發生點擊事件時，會呼叫change()函式，用參數'todo'帶入 -->
+      <span onclick="change('counter')">Counter</span>
+      <!-- 當發生點擊事件時，會呼叫change()函式，用參數'counter'帶入 -->
+    </div>
+    <hr />
+    <div id="countainer"></div>
+    <!-- 製作一個空的<div>，id設定為"countainer" -->
+    <script>
+      // change() 函式，參數為 target
+        function change(target){ 
+            let countainer=document.querySelector("#countainer") 
+            // 讓變數 countainer = id為 countainer 的標籤
+            if(target=="todo"){ // 如果參數為 todo 時，執行以下程式(即使用者點擊 ToDoList )
+                let app=document.createElement("div"); // 新增一個<div>，並指定為變數 app
+                app.textContent="ToDoList Feature"; // 新增 app 的內容為 "ToDoList Feature"
+                countainer.appendChild(app); // 將 app 元素添加到 countainer 元素中
+            }else{ // 如果參數為其他時，執行以下程式(即使用者點擊 Counter )
+                let app=document.createElement("div"); // 新增一個<div>，並指定為變數 app
+                app.textContent="Counter Feature"; // 新增 app 的內容為 "Counter Feature"
+                countainer.appendChild(app); // 新增一個<div>，並指定為變數 app
+            }
+        }
+    </script>
+  </body>
+</html>
